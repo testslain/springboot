@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${product.id} ? 'Edit Product' : 'Add Product')">
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <main class="main-content">
+        <div class="container">
+            <div class="mb-4">
+                <h1>
+                    <i th:class="${product.id != null ? 'bi bi-pencil-square' : 'bi bi-plus-circle'} + ' me-2 text-primary'"></i>
+                    <span th:text="${product.id != null ? 'Edit Product' : 'Add Product'}">Add Product</span>
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" 
+                            th:text="${product.id != null ? 'Edit Product' : 'Add Product'}">Add Product</li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <!-- Display error message if present -->
+            <div class="alert alert-danger" th:if="${errorMessage}" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${errorMessage}">Error message</span>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0" th:text="${product.id != null ? 'Edit Product Details' : 'Product Details'}">Product Details</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/products}" method="post" th:object="${product}">
+                        <!-- Hidden field for ID (for edit operations) -->
+                        <input type="hidden" th:field="*{id}" />
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="name" class="form-label">Product Name *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="bi bi-tag text-primary"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="name" th:field="*{name}" 
+                                           placeholder="Enter product name" required>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                    Please provide a product name.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="bi bi-bookmark text-primary"></i>
+                                    </span>
+                                    <select class="form-select" id="category" th:field="*{category}" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Clothing">Clothing</option>
+                                        <option value="Food">Food</option>
+                                        <option value="Office Supplies">Office Supplies</option>
+                                        <option value="Books">Books</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">
+                                    Please select a category.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="quantity" class="form-label">Quantity *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="bi bi-123 text-primary"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="quantity" th:field="*{quantity}" 
+                                           placeholder="Enter quantity" min="0" required>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}">
+                                    Please provide a valid quantity.
+                                </div>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> Products with quantity less than 10 will be marked as low stock.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="price" class="form-label">Price ($) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="bi bi-currency-dollar text-primary"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="price" th:field="*{price}" 
+                                           placeholder="Enter price" step="0.01" min="0.01" required>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">
+                                    Please provide a valid price.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Description</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="bi bi-text-paragraph text-primary"></i>
+                                </span>
+                                <textarea class="form-control" id="description" th:field="*{description}" 
+                                          placeholder="Enter product description (optional)" rows="4"></textarea>
+                            </div>
+                            <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
+                                Description error.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/products}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Save Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>
